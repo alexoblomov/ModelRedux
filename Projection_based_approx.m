@@ -28,7 +28,7 @@ clf
 model.plotsol(u);
 
 % Compute the quantity of interest:
-Y = model.q' * u
+Y = model.q' * u;
 
 
 %% Quantity of interest as a random variable
@@ -75,7 +75,17 @@ end
 Vr = orth(Vr);
 
 
-%%%%%%%%%%% preassemble matrices, rhs
+%%%%%%% preassemble matrices, rhs  
+% Reduced matrice and reduced right-hand side
+tildeA1 = Vr'*model.K1*Vr;
+tildeA2 = Vr'*model.K2*Vr;
+tildeA3 = Vr'*model.K3*Vr;
+tildeA4 = Vr'*model.K4*Vr;
+tildeA5 = Vr'*model.Ad*Vr;
+
+tildeb = Vr'*model.b;
+tildeq = Vr'*model.q;
+
 
 timeOffline = toc; % stop timer
 
@@ -91,9 +101,7 @@ disp(timeOffline)
 X = model.randX();
 
 tic; % start timer
-% Reduced matrice and reduced right-hand side
-tildeA = Vr'*model.A(X)*Vr;
-tildeb = Vr'*model.b;
+tildeA = tildeA1*X(1) + tildeA2*X(2) + tildeA3*X(3) + tildeA3*X(4) + tildeA4*X(5);
 
 % Solve the reduced linear system
 lambda = tildeA\tildeb;
@@ -135,7 +143,7 @@ subplot(1,2,1)
 model.plotsol(u)
 title('Full model')
 subplot(1,2,2)
-model.plotsol(lambda)
+model.plotsol(Vr*lambda)
 title('Reduced model')
 
 %% Error over the parameter domain

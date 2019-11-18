@@ -75,7 +75,17 @@ end
 Vr = orth(Vr);
 
 
-%%%%%%%%%%% preassemble matrices, rhs
+%%%%%%% preassemble matrices, rhs  
+% Reduced matrice and reduced right-hand side
+tildeA1 = Vr'*model.K1*Vr;
+tildeA2 = Vr'*model.K2*Vr;
+tildeA3 = Vr'*model.K3*Vr;
+tildeA4 = Vr'*model.K4*Vr;
+tildeA5 = Vr'*model.Ad*Vr;
+
+tildeb = Vr'*model.b;
+tildeq = Vr'*model.q;
+
 
 timeOffline = toc; % stop timer
 
@@ -91,9 +101,7 @@ disp(timeOffline)
 X = model.randX();
 
 tic; % start timer
-% Reduced matrice and reduced right-hand side
-tildeA = Vr'*model.A(X)*Vr;
-tildeb = Vr'*model.b;
+tildeA = tildeA1 + tildeA2 + tildeA3 + tildeA3 + tildeA4;
 
 % Solve the reduced linear system
 lambda = tildeA\tildeb;
@@ -171,4 +179,3 @@ disp('L-infty error:')
 disp( max(error) )
 disp('L-2 error:')
 disp( sqrt( sum(error.^2)/K ) )
-
